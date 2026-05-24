@@ -1,0 +1,15 @@
+-xc++
+-std=c++23
+-Wall
+-Wextra
+-Wpedantic
+-fPIC
+-g3
+
+-Iinclude
+-Ivendor
+-I/usr/include
+-I/usr/local/include
+
+-DGLFW_INCLUDE_NONE
+-DDEBUG
