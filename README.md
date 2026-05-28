@@ -1,0 +1,8 @@
+# A Renderer
+I will give this engine a fancy little name when it actually does something, right now its just a collection of headers.
+
+The goal is to create a rendering engine to test my projection math and future rendering endeavours on, while also making the renderer actually extensible, architecturally sound and actually fun to work with
+## AI
+I am not interested in AI generating this project, anything I create should be born out of my own mind or else all this is worthless. That being said, I am a programming novice and a lot of concepts are new to me. I could read books first and then come here, but not only is that not fun, a book hardly sets you up for actual application of the concept that it teaches. Plus after 3 books that I thouroughly study, 3 months would have elapsed and I would have lost all will to work on this project. Instead I can use AI as a refrence. I can implement my own thoughts then ask it if there is a better approach. If there is, I can then thoroughly understand it and learn some new concepts that I can double check on actual references. Many concepts of templates, memory management and modern C++ standard library i would simply not know if not for an AI telling me that those exist.
+
+**But do I copy AI code?** Yes. I am writing a library and it involves a lot of tediuos code that isnt challenging but only extensive. Many times I have to reimplement my entire header in some better way, and its usually not a job complicated enough to warrant the tedious rewrite of 200 lines. Rest assured though, I do not copy what i  do not understand and I read the AI generated code thoroughly.
