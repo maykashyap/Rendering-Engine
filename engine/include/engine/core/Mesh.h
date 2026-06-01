@@ -3,7 +3,6 @@
 // Now there are a lot of ways to optimize this but i will just implement the
 // basic version i need for now
 
-#include "engine/lib/vector.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -25,12 +24,8 @@ namespace Engine::Assets {
 // }
 // then construct the Mesh
 
-enum class ComponentTypes { POSITION, COLOR, NORMAL, TEXCOORD };
-enum class ComponentSize : uint32_t {
-  Float = sizeof(float),
-  Float2 = sizeof(Math::vec2f),
-  Float3 = sizeof(Math::vec3f)
-};
+enum class ComponentTypes { POSITION, COLOR, TEXCOORD, NORMAL };
+enum class ComponentSize : uint32_t { Float = 1, Float2 = 2, Float3 = 3 };
 
 struct Component {
   ComponentTypes component;
@@ -99,9 +94,14 @@ public:
   }
   [[nodiscard]] uint32_t getIndexCount() const noexcept { return m_indexCount; }
   [[nodiscard]] uint32_t getVertexSize() const noexcept { return m_stride; }
+
+  [[nodiscard]] const VertexLayout &getLayout() const noexcept {
+    return m_vertexLayout;
+  }
   void clearMesh() noexcept {
     m_vertices.clear();
     m_indices.clear();
+    m_vertexLayout.clear();
     m_vertexCount = 0;
     m_indexCount = 0;
     m_stride = 0;

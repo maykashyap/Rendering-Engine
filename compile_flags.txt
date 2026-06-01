@@ -6,8 +6,8 @@
 -fPIC
 -g3
 
--Iinclude
--Ivendor
+-Iengine/include
+-Iengine/vendor
 -I/usr/include
 -I/usr/local/include
 

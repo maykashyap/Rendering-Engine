@@ -5,7 +5,7 @@
 #include <string_view>
 
 namespace Engine::Backend {
-class OpenGLShader : public IShader {
+class OpenGLShader final : public IShader {
 private:
   GLuint ID;
 
