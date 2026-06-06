@@ -1,4 +1,5 @@
 #include "OpenGLRenderer.h"
+#include "engine/lib/matrix.h"
 #include <algorithm>
 #include <cstdint>
 
@@ -73,8 +74,8 @@ void OpenGLRenderer::setViewport(uint32_t x, uint32_t y, uint32_t width,
              static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 }
 
-void OpenGLRenderer::frameStart() {
-  // assign matrix
+void OpenGLRenderer::sceneStart(const Math::mat4x4f &projmat) {
+  m_projectionMatrix = projmat;
   m_renderQueue.clear();
 }
 
@@ -82,15 +83,14 @@ void OpenGLRenderer::submit(const Renderer::RendererCommand &command) {
   m_renderQueue.push_back(command);
 }
 
-void OpenGLRenderer::frameEnd() {
+void OpenGLRenderer::sceneEnd() {
   if (m_renderQueue.empty())
     return;
 
-  std::sort(m_renderQueue.begin(), m_renderQueue.end(),
-            [](const Renderer::RendererCommand &a,
-               const Renderer::RendererCommand &b) {
-              return a.shader.get() < b.shader.get();
-            });
+  std::sort(
+      m_renderQueue.begin(), m_renderQueue.end(),
+      [](const Renderer::RendererCommand &a,
+         const Renderer::RendererCommand &b) { return a.shader < b.shader; });
 
   flush();
 }
@@ -99,9 +99,9 @@ void OpenGLRenderer::flush() {
   IShader *shaderCurrent = nullptr;
 
   for (const auto &command : m_renderQueue) {
-    if (shaderCurrent != command.shader.get()) {
+    if (shaderCurrent != command.shader) {
       command.shader->use();
-      shaderCurrent = command.shader.get();
+      shaderCurrent = command.shader;
       // you would also assign the shader mat4 uniform your own projection
       // matrix here
     }

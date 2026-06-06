@@ -80,7 +80,7 @@ public:
       if (component.component == componentType)
         return component;
     }
-    throw std::runtime_error("Vertex Component not found, in layout.");
+    throw std::runtime_error("Vertex Component not found in layout.");
   }
   // Returns the raw byte blob ready for `glBufferData` or `vkCmdCopyBuffer`
   [[nodiscard]] const std::vector<uint8_t> &get_vertex_bytes() const noexcept {
@@ -97,6 +97,10 @@ public:
 
   [[nodiscard]] const VertexLayout &getLayout() const noexcept {
     return m_vertexLayout;
+  }
+  [[nodiscard]] bool isEmpty() const noexcept {
+    // A mesh is empty if it has no vertices or no indices to draw
+    return m_indices.empty() || m_vertices.empty();
   }
   void clearMesh() noexcept {
     m_vertices.clear();

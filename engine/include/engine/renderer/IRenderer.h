@@ -17,13 +17,14 @@ public:
 };
 
 struct RendererCommand {
-  std::shared_ptr<IGPUVertexArrayHandle> vaHandle;
-  std::shared_ptr<IShader> shader;
-  // A Transform Matrix that will be passed to the shader per object.
+  IGPUVertexArrayHandle *vaHandle;
+  IShader *shader;
+  Math::mat4x4f *translation;
 };
 
 class IRenderer {
 public:
+  IRenderer() = default;
   virtual ~IRenderer() = default;
 
   IRenderer(const IRenderer &) = delete;
@@ -33,9 +34,8 @@ public:
   virtual void setViewport(uint32_t x, uint32_t y, uint32_t width,
                            uint32_t height) = 0;
   virtual void clear(float r, float g, float b, float a) = 0;
-  virtual void
-      frameStart(/* here is where you provide your projection matrix*/) = 0;
-  virtual void frameEnd() = 0;
+  virtual void sceneStart(const Math::mat4x4f &projectionMatrix) = 0;
+  virtual void sceneEnd() = 0;
   virtual void submit(const RendererCommand &command) = 0;
 };
 } // namespace Engine::Renderer

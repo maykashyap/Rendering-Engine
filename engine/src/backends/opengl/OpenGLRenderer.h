@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/core/Mesh.h"
+#include "engine/lib/matrix.h"
 #include "engine/renderer/IRenderer.h"
 #include "glad/glad.h"
 #include <cstdint>
@@ -29,20 +30,21 @@ public:
 
 class OpenGLRenderer final : public Renderer::IRenderer {
 private:
-  // A projection Matrix
+  Math::mat4x4f m_projectionMatrix;
   std::vector<Renderer::RendererCommand> m_renderQueue;
 
   void flush();
 
 public:
+  OpenGLRenderer() = default;
   ~OpenGLRenderer() override = default;
 
   void init() override;
   void setViewport(uint32_t x, uint32_t y, uint32_t width,
                    uint32_t height) override;
   void clear(float r, float g, float b, float a) override;
-  void frameStart(/*Again your projection Matrix*/) override;
-  void frameEnd() override;
+  void sceneStart(const Math::mat4x4f &projectionMatrix) override;
+  void sceneEnd() override;
   void submit(const Renderer::RendererCommand &command) override;
 };
 } // namespace Engine::Backend

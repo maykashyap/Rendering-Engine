@@ -1,7 +1,7 @@
 #pragma once
 
 namespace Engine {
-class Implement {
+class IScript {
 public:
   virtual void Start() = 0;
   virtual void Update() = 0;

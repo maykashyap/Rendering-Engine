@@ -23,3 +23,7 @@ std::unique_ptr<Renderer::IGPUVertexArrayHandle>
 BackendBuilder::createVertexArrayHandle(const Assets::Mesh &mesh) {
   return std::make_unique<Backend::OpenGLGPUVAHandle>(mesh);
 }
+
+BackendBuilder::t_Renderer BackendBuilder::createRenderer() {
+  return std::make_unique<Backend::OpenGLRenderer>();
+}

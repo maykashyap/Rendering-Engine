@@ -63,6 +63,10 @@ template <typename T> struct Vec2 : VecBase<Vec2<T>, T, 2> {
     T data[2];
   };
 
+  Vec2() {
+    x = 0;
+    y = 0;
+  }
   Vec2(T x, T y) : x(x), y(y) {}
   explicit Vec2(T scalar) : x(scalar), y(scalar) {}
 
@@ -108,6 +112,11 @@ template <typename T> struct Vec3 : VecBase<Vec3<T>, T, 3> {
     T data[3];
   };
 
+  Vec3() {
+    x = 0;
+    y = 0;
+    z = 0;
+  }
   Vec3(T x, T y, T z) : x(x), y(y), z(z) {}
   explicit Vec3(T scalar) : x(scalar), y(scalar), z(scalar) {}
   Vec3(const Vec2<T> &v, T z = T(0)) : x(v.x), y(v.y), z(z) {}
@@ -160,6 +169,12 @@ template <typename T> struct alignas(16) Vec4 : VecBase<Vec4<T>, T, 4> {
     T data[4];
   };
 
+  Vec4() {
+    x = 0;
+    y = 0;
+    z = 0;
+    w = 0;
+  }
   Vec4(T x = T(0), T y = T(0), T z = T(0), T w = T(0))
       : x(x), y(y), z(z), w(w) {}
 

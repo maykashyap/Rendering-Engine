@@ -13,11 +13,15 @@
 namespace Engine {
 class BackendBuilder {
 public:
-  static std::unique_ptr<IWindow> createWindow(int width, int height,
-                                               std::string_view title);
-  static std::unique_ptr<IShader> createShader(std::string_view vertexPath,
-                                               std::string_view fragmentPath);
-  static std::unique_ptr<Renderer::IGPUVertexArrayHandle>
-  createVertexArrayHandle(const Assets::Mesh &mesh);
+  using t_Shader = std::unique_ptr<IShader>;
+  using t_Window = std::unique_ptr<IWindow>;
+  using t_Renderer = std::unique_ptr<Renderer::IRenderer>;
+  using t_VAHandle = std::unique_ptr<Renderer::IGPUVertexArrayHandle>;
+
+  static t_Window createWindow(int width, int height, std::string_view title);
+  static t_Shader createShader(std::string_view vertexPath,
+                               std::string_view fragmentPath);
+  static t_VAHandle createVertexArrayHandle(const Assets::Mesh &mesh);
+  static t_Renderer createRenderer();
 };
 } // namespace Engine
