@@ -40,14 +40,14 @@ OpenGLShader::OpenGLShader(std::string_view vertexPath,
   GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexCode);
   GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentCode);
 
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-
   // Linking
   ID = glCreateProgram();
   glAttachShader(ID, vertexShader);
   glAttachShader(ID, fragmentShader);
   glLinkProgram(ID);
+
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
 
   int success;
   glGetProgramiv(ID, GL_LINK_STATUS, &success);

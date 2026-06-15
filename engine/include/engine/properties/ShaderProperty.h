@@ -5,7 +5,7 @@
 #include "engine/renderer/IShader.h"
 #include <string_view>
 namespace Engine::Property {
-class ShaderProgram : IProperty {
+class ShaderProgram : public IProperty {
 private:
   BackendBuilder::t_Shader shader;
   std::string vertexPath, fragmentPath;

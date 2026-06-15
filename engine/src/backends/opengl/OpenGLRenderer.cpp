@@ -1,7 +1,9 @@
 #include "OpenGLRenderer.h"
 #include "engine/lib/matrix.h"
+#include "engine/renderer/IRenderer.h"
 #include <algorithm>
 #include <cstdint>
+#include <iostream>
 
 using namespace Engine::Backend;
 
@@ -14,12 +16,15 @@ OpenGLGPUVAHandle::OpenGLGPUVAHandle(const Assets::Mesh &mesh) {
 
   glGenBuffers(1, &m_vboID);
   glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+  // this function requires size, but in this case we can use the .size() which
+  // returns the count because we are using raw binary vector with a type of
+  // uint8
   glBufferData(GL_ARRAY_BUFFER, mesh.get_vertex_bytes().size(),
                mesh.get_vertex_bytes().data(), GL_STATIC_DRAW);
 
   glGenBuffers(1, &m_eboID);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_eboID);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.get_indices().size(),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indexCount * sizeof(uint32_t),
                mesh.get_indices().data(), GL_STATIC_DRAW);
 
   const auto &layout = mesh.getLayout();
@@ -66,6 +71,21 @@ void OpenGLRenderer::init() {
   glFrontFace(GL_CCW);
 
   // logging
+
+  glEnable(GL_DEBUG_OUTPUT);
+  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); // Forces OpenGL to wait until the
+                                         // error prints
+
+  // 2. Define the callback function
+  glDebugMessageCallback(
+      [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+         const GLchar *message, const void *userParam) {
+        if (severity == GL_DEBUG_SEVERITY_HIGH ||
+            severity == GL_DEBUG_SEVERITY_MEDIUM) {
+          std::cerr << "[OpenGL Error] " << message << std::endl;
+        }
+      },
+      nullptr);
 }
 
 void OpenGLRenderer::setViewport(uint32_t x, uint32_t y, uint32_t width,
@@ -74,9 +94,14 @@ void OpenGLRenderer::setViewport(uint32_t x, uint32_t y, uint32_t width,
              static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 }
 
+void OpenGLRenderer::clear(float r, float g, float b, float a) {
+  glClearColor(r, g, b, a);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+// it is questionable wether I need this or not
 void OpenGLRenderer::sceneStart(const Math::mat4x4f &projmat) {
   m_projectionMatrix = projmat;
-  m_renderQueue.clear();
 }
 
 void OpenGLRenderer::submit(const Renderer::RendererCommand &command) {
@@ -84,8 +109,9 @@ void OpenGLRenderer::submit(const Renderer::RendererCommand &command) {
 }
 
 void OpenGLRenderer::sceneEnd() {
-  if (m_renderQueue.empty())
+  if (m_renderQueue.empty()) {
     return;
+  }
 
   std::sort(
       m_renderQueue.begin(), m_renderQueue.end(),
@@ -93,11 +119,11 @@ void OpenGLRenderer::sceneEnd() {
          const Renderer::RendererCommand &b) { return a.shader < b.shader; });
 
   flush();
+  m_renderQueue.clear();
 }
 
 void OpenGLRenderer::flush() {
   IShader *shaderCurrent = nullptr;
-
   for (const auto &command : m_renderQueue) {
     if (shaderCurrent != command.shader) {
       command.shader->use();
@@ -109,7 +135,7 @@ void OpenGLRenderer::flush() {
     command.vaHandle->bind();
     glDrawElements(GL_TRIANGLES,
                    static_cast<GLsizei>(command.vaHandle->getIndexCount()),
-                   GL_UNSIGNED_INT, nullptr);
+                   GL_UNSIGNED_INT, 0);
   }
   glBindVertexArray(0);
 }

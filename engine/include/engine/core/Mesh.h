@@ -62,12 +62,17 @@ public:
 
   template <typename T>
   Mesh(std::vector<T> &vertices, std::vector<uint32_t> &indices,
-       VertexLayout &vertexLayout) {
-    m_stride = sizeof(T);
-    m_vertexCount = static_cast<uint32_t>(vertices.size());
+       const VertexLayout &vertexLayout, size_t stride) {
+    // the size of the template struct.
+    m_stride = stride;
+
+    m_vertexCount =
+        static_cast<uint32_t>((vertices.size() * sizeof(T)) / m_stride);
     m_indexCount = static_cast<uint32_t>(indices.size());
+
     m_indices = std::move(indices);
     m_vertexLayout = std::move(vertexLayout);
+
     m_vertices.resize(m_vertexCount * m_stride);
     if (m_vertexCount > 0)
       memcpy(m_vertices.data(), vertices.data(), m_vertexCount * m_stride);

@@ -1,8 +1,9 @@
 #include "engine/core/BackendBuilder.h"
 
-#include "../backends/glfw/GLFWWindow.h"
 #include "../backends/opengl/OpenGLRenderer.h"
 #include "../backends/opengl/OpenGLShader.h"
+
+#include "../backends/glfw/GLFWWindow.h"
 
 #include <memory>
 

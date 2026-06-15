@@ -43,6 +43,10 @@ void GLFWWindow::create() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  // glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_WAYLAND);
+
+  glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
 
   handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
   if (handle == nullptr) {

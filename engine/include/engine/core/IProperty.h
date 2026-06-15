@@ -15,5 +15,6 @@ public:
   [[nodiscard]] std::string_view getID() const noexcept { return ID; };
   void setID(std::string_view ID) { this->ID = ID; }
   void setOwner(Entity *owner) { m_owner = owner; }
+  virtual ~IProperty() = default;
 };
 } // namespace Engine

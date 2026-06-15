@@ -5,7 +5,6 @@
 #include "engine/lib/matrix.h"
 #include "engine/renderer/IShader.h"
 #include <cstdint>
-#include <memory>
 namespace Engine::Renderer {
 class IGPUVertexArrayHandle {
 public:

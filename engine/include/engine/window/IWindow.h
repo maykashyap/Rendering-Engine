@@ -13,7 +13,6 @@ public:
   virtual int getWidth() const = 0;
   virtual int getHeight() const = 0;
 
-  // Non-copyable, movable via interface not needed — factory owns lifetime
   IWindow(const IWindow &) = delete;
   IWindow &operator=(const IWindow &) = delete;
 
