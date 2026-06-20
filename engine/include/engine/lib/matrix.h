@@ -22,8 +22,17 @@ private:
 public:
   // ── Constructors ──────────────────────────────────────────────────────
 
-  Matrix() { matrix_data.fill(T(0)); }
+  // Default constructor always creates Identity matrix, which i think makes
+  // sense
+  Matrix() {
+    matrix_data.fill(T(0));
+    std::size_t identity_limit = std::min(Rows, Columns);
+    for (std::size_t i = 0; i < identity_limit; ++i) {
+      (*this)(i, i) = T(1); // Set diagonal to 1
+    }
+  }
 
+  // You can use this to nullify the Identity matrix created above.
   explicit Matrix(T d) { matrix_data.fill(d); }
 
   // Flat row-major initializer list.
@@ -51,14 +60,17 @@ public:
   }
 
   // Assign a smaller matrix into this one — remaining elements zeroed.
+  // Previosly I had an = overloading, but there is no point in assigning an
+  // initialized matrix.
   template <std::size_t R, std::size_t C>
     requires(R <= Rows && C <= Columns)
-  Matrix &operator=(const Matrix<T, R, C> &mat) {
-    matrix_data.fill(T(0));
-    for (std::size_t r = 0; r < R; ++r)
-      for (std::size_t c = 0; c < C; ++c)
-        (*this)(r, c) = mat(r, c);
-    return *this;
+  Matrix(const Matrix<T, R, C> &mat)
+      : Matrix() { // Chains the identity constructor first!
+    for (std::size_t r = 0; r < R; ++r) {
+      for (std::size_t c = 0; c < C; ++c) {
+        (*this)(r, c) = mat(r, c); // Overwrites top-left block
+      }
+    }
   }
 
   // ── Element access ────────────────────────────────────────────────────
@@ -157,6 +169,8 @@ public:
   // Named transform() rather than operator* to keep call sites explicit:
   // "mat.transform(vec)" is unambiguous, "mat * vec" could be confused
   // with scalar multiply.
+  // I mean this could be an operator overload, its not like the compiler wont
+  // throw hands if I do something stupid.
   Vec4<T> transform(const Vec4<T> &v) const
     requires(Rows == 4 && Columns == 4)
   {
@@ -191,7 +205,6 @@ public:
 };
 
 // ── Free functions ─────────────────────────────────────────────────────────
-// lhs taken by value — gives us the copy we need without an extra allocation.
 
 template <typename T, std::size_t Rows, std::size_t Columns>
 inline Matrix<T, Rows, Columns> operator+(Matrix<T, Rows, Columns> lhs,

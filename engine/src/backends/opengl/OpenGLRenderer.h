@@ -31,6 +31,7 @@ public:
 class OpenGLRenderer final : public Renderer::IRenderer {
 private:
   Math::mat4x4f m_projectionMatrix;
+  float aspectRatio = 1; // temporary
   std::vector<Renderer::RendererCommand> m_renderQueue;
 
   void flush();

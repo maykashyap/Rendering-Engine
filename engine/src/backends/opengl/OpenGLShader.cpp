@@ -1,4 +1,6 @@
 #include "OpenGLShader.h"
+#include "OpenGLRenderer.h"
+#include "engine/lib/matrix.h"
 #include <fstream>
 #include <stdexcept>
 
@@ -82,14 +84,20 @@ OpenGLShader &OpenGLShader::operator=(OpenGLShader &&other) noexcept {
 
 void OpenGLShader::use() const { glUseProgram(ID); }
 
-void OpenGLShader::setBool(std::string_view name, bool value) const {
+void OpenGLShader::setUniform(std::string_view name, bool value) const {
   glUniform1i(glGetUniformLocation(ID, name.data()), static_cast<int>(value));
 }
 
-void OpenGLShader::setInt(std::string_view name, int value) const {
+void OpenGLShader::setUniform(std::string_view name, int value) const {
   glUniform1i(glGetUniformLocation(ID, name.data()), value);
 }
 
-void OpenGLShader::setFloat(std::string_view name, float value) const {
+void OpenGLShader::setUniform(std::string_view name, float value) const {
   glUniform1f(glGetUniformLocation(ID, name.data()), value);
+}
+
+void OpenGLShader::setUniform(std::string_view name,
+                              const Math::mat4x4f *matrix) const {
+  glUniformMatrix4fv(glGetUniformLocation(ID, name.data()), 1, GL_FALSE,
+                     matrix->c_array());
 }

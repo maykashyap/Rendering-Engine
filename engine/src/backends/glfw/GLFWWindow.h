@@ -29,6 +29,8 @@ public:
   bool shouldClose() const override;
   int getWidth() const override;
   int getHeight() const override;
+
+  double getTime() const override { return glfwGetTime(); }
 };
 
 } // namespace Engine::Backend

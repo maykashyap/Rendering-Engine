@@ -7,10 +7,9 @@
 
 using namespace Engine;
 
-void Execution::pushScript(IScript *script) { m_ScriptStack.push_back(script); }
-
 void Execution::Start() {
-  for (auto i : m_ScriptStack) {
+  IScript::executionHandle = this;
+  for (const auto &i : m_ScriptStack) {
     i->Start();
   }
 }
@@ -19,7 +18,7 @@ void Execution::Update() {
   while (!m_windowHandle->shouldClose()) {
     m_rendererHandle->clear(0.85, 0.85, 0.45, 1);
     m_rendererHandle->sceneStart(Math::mat4x4f::Identity());
-    for (auto i : m_ScriptStack) {
+    for (const auto &i : m_ScriptStack) {
       i->Update();
     }
     m_rendererHandle->sceneEnd();
@@ -29,7 +28,7 @@ void Execution::Update() {
 }
 
 void Execution::End() {
-  for (auto i : m_ScriptStack) {
+  for (const auto &i : m_ScriptStack) {
     i->End();
   }
   m_ScriptStack.clear();
@@ -48,7 +47,7 @@ void Execution::submitEntity(const Entity &entity) {
   if (mesh && transform) {
     m_rendererHandle->submit({mesh->m_vahandle.get(),
                               shader->getShaderProgramHandle(),
-                              &transform->transform});
+                              transform->getTransformMatrix()});
   } else {
     throw std::runtime_error("what do you want me to do with this thing?");
   }

@@ -78,8 +78,8 @@ void OpenGLRenderer::init() {
 
   // 2. Define the callback function
   glDebugMessageCallback(
-      [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-         const GLchar *message, const void *userParam) {
+      [](GLenum, GLenum, GLuint, GLenum severity, GLsizei,
+         const GLchar *message, const void *) {
         if (severity == GL_DEBUG_SEVERITY_HIGH ||
             severity == GL_DEBUG_SEVERITY_MEDIUM) {
           std::cerr << "[OpenGL Error] " << message << std::endl;
@@ -92,6 +92,7 @@ void OpenGLRenderer::setViewport(uint32_t x, uint32_t y, uint32_t width,
                                  uint32_t height) {
   glViewport(static_cast<GLint>(x), static_cast<GLint>(y),
              static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+  aspectRatio = (float)width / (float)height;
 }
 
 void OpenGLRenderer::clear(float r, float g, float b, float a) {
@@ -123,7 +124,7 @@ void OpenGLRenderer::sceneEnd() {
 }
 
 void OpenGLRenderer::flush() {
-  IShader *shaderCurrent = nullptr;
+  const Assets::IShader *shaderCurrent = nullptr;
   for (const auto &command : m_renderQueue) {
     if (shaderCurrent != command.shader) {
       command.shader->use();
@@ -132,6 +133,8 @@ void OpenGLRenderer::flush() {
       // matrix here
     }
     // here you assign the shader mat4 uniform the translation matrix
+    command.shader->setUniform("transform", command.translation);
+    command.shader->setUniform("aspectRatio", aspectRatio);
     command.vaHandle->bind();
     glDrawElements(GL_TRIANGLES,
                    static_cast<GLsizei>(command.vaHandle->getIndexCount()),

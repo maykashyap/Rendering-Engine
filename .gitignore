@@ -1,3 +1,4 @@
 _renderdoc/
 bin/
 engine/build
+.vscode

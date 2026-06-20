@@ -1,26 +1,22 @@
 #pragma once
 
-#include "engine/core/BackendBuilder.h"
 #include "engine/core/IProperty.h"
 #include "engine/renderer/IShader.h"
 #include <string_view>
 namespace Engine::Property {
 class ShaderProgram : public IProperty {
 private:
-  BackendBuilder::t_Shader shader;
+  const Assets::IShader *m_shader = nullptr;
   std::string vertexPath, fragmentPath;
 
 public:
-  ShaderProgram(std::string_view vertexShaderPath,
-                std::string_view fragmentShaderPath)
-      : vertexPath(std::move(vertexShaderPath)),
-        fragmentPath(std::move(fragmentShaderPath)) {
+  ShaderProgram(Assets::IShader *shader) {
     ID = "ShaderProgram";
-    shader = BackendBuilder::createShader(vertexShaderPath, fragmentShaderPath);
+    m_shader = shader;
   }
   std::string_view getVertexPath() const { return vertexPath; }
   std::string_view getFragmentPath() const { return fragmentPath; }
 
-  IShader *getShaderProgramHandle() { return shader.get(); }
+  const Assets::IShader *getShaderProgramHandle() const { return m_shader; }
 };
 } // namespace Engine::Property

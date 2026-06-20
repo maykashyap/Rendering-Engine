@@ -14,7 +14,7 @@ std::unique_ptr<IWindow> BackendBuilder::createWindow(int width, int height,
   return std::make_unique<Backend::GLFWWindow>(width, height, title);
 }
 
-std::unique_ptr<IShader>
+std::unique_ptr<Assets::IShader>
 BackendBuilder::createShader(std::string_view vertexPath,
                              std::string_view fragmentPath) {
   return std::make_unique<Backend::OpenGLShader>(vertexPath, fragmentPath);

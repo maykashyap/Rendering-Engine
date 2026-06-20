@@ -1,21 +1,22 @@
+#include "engine.h"
 #include "engine/core/BackendBuilder.h"
-#include "engine/core/Entity.h"
-#include "engine/core/Execution.h"
-#include "engine/core/Mesh.h"
-#include "engine/lib/matrix.h"
 #include "engine/lib/vector.h"
-#include "engine/properties/MeshProperty.h"
-#include "engine/properties/ShaderProperty.h"
 #include "engine/properties/Transform.h"
+
 #include <cstddef>
 #include <iostream>
+#include <string_view>
 
 using namespace Engine;
 
-void log(std::string_view message) { std::cout << message << std::endl; }
+constexpr int WIDTH = 1920;
+constexpr int HEIGHT = 1080;
 
 class Playground : public IScript {
   Entity square, triangle;
+  BackendBuilder::t_Shader shader;
+
+  float time = 0, deltaTime = 0, speed = 0.2f;
 
   void Start() override;
   void Update() override;
@@ -45,45 +46,62 @@ void Playground::Start() {
   Assets::Mesh squareMesh(squareVertices, squareIndices, layout,
                           sizeof(VertexPosCol));
 
-  std::vector<float> triangleVertices = {0.0f,  0.5f,  1.0f, 0.5f, 1.0f, 0.5f,
-                                         0.5f,  -0.5f, 1.0f, 0.5f, 1.0f, 0.5f,
-                                         -0.5f, -0.5f, 1.0f, 0.5f, 1.0f, 0.5f};
+  std::vector<float> triangleVertices = {0.0f,  0.5f,  -1.0f, 0.5f, 1.0f, 0.5f,
+                                         0.5f,  -0.5f, -1.0f, 0.5f, 1.0f, 0.5f,
+                                         -0.5f, -0.5f, -1.0f, 0.5f, 1.0f, 0.5f};
   // Please always keep in mind the faceculling settings
   // wether it is cw or ccw
   std::vector<uint32_t> triangleIndices = {2, 1, 0};
   Assets::Mesh triangleMesh(triangleVertices, triangleIndices, layout,
                             sizeof(VertexPosCol));
 
-  square.addProperty<Property::ShaderProgram>(
-      "./playground/shaders/vertex.vert", "playground/shaders/fragment.frag");
-  square.addProperty<Property::Transform>((Math::mat4x4f)0);
+  shader = BackendBuilder::createShader("./playground/shaders/vertex.vert",
+                                        "playground/shaders/fragment.frag");
+
+  square.addProperty<Property::ShaderProgram>(shader.get());
+  square.addProperty<Property::Transform>();
   square.addProperty<Property::Mesh>("Square Mesh", squareMesh);
 
-  triangle.addProperty<Property::ShaderProgram>(
-      "./playground/shaders/vertex.vert", "playground/shaders/fragment.frag");
-  triangle.addProperty<Property::Transform>((Math::mat4x4f)0);
+  triangle.addProperty<Property::ShaderProgram>(shader.get());
+  triangle.addProperty<Property::Transform>();
   triangle.addProperty<Property::Mesh>("Triangle Mesh", triangleMesh);
+
+  speed = 1.0f;
 }
 
 void Playground::Update() {
-  executionHandle->submitEntity(triangle);
+
+  deltaTime += executionHandle->getWindowHandle()->getTime() - time;
+  time = executionHandle->getWindowHandle()->getTime();
+
+  auto squareTransformHandle =
+      square.getProperty<Property::Transform>("Transform");
+  // You are a sexy man, never forget.
+  squareTransformHandle->rotation =
+      Math::vec3f(0, speed * deltaTime, speed * deltaTime);
+
+  // dont set uniforms here, the shader is not yet linked.
+  // entity submission calculates the transform matrix on submission, which
+  // means that any subsequent changes to the transform parameters after
+  // submission will not reflect untill next frame.
+  // executionHandle->submitEntity(triangle);
   executionHandle->submitEntity(square);
 }
 
 int main() {
-  BackendBuilder::t_Window window =
-      BackendBuilder::createWindow(800, 600, "This beautiful Engine of mine.");
+  BackendBuilder::t_Window window = BackendBuilder::createWindow(
+      WIDTH, HEIGHT, "This beautiful Engine of mine.");
   window->create();
 
   BackendBuilder::t_Renderer renderer = BackendBuilder::createRenderer();
   renderer->init();
-  renderer->setViewport(0, 0, 800, 600);
+  renderer->setViewport(0, 0, WIDTH, HEIGHT);
 
   Execution engine(*renderer.get(), *window.get());
 
   IScript::executionHandle = &engine;
 
-  engine.pushScript(new Playground());
+  engine.injectScript<Playground>();
 
   engine.Start();
   engine.Update();

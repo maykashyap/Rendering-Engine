@@ -17,8 +17,9 @@ public:
 
 struct RendererCommand {
   IGPUVertexArrayHandle *vaHandle;
-  IShader *shader;
-  Math::mat4x4f *translation;
+  const Assets::IShader *shader;
+  const Math::mat4x4f *translation; // at this stage of the code I doubt you
+                                    // would/should alter this matrix.
 };
 
 class IRenderer {

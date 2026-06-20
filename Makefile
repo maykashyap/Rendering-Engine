@@ -1,6 +1,6 @@
 CXX      := g++
 CC       := gcc
-CXXFLAGS := -std=c++20 -Wall -Wextra -Wpedantic -DGLFW_INCLUDE_NONE
+CXXFLAGS := -std=c++20 -DGLFW_INCLUDE_NONE
 CFLAGS   :=
 LDFLAGS  :=
 LIBS     := -lglfw -ldl -lGL
@@ -136,11 +136,6 @@ $(OBJ_DIR)/engine/vendor/%.o: $(VENDOR_DIR)/%.c
 	$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
 # ── Clean ─────────────────────────────────────────────────────────────────
-# clean     — wipe all object files (forces full recompile, keeps binaries)
-# clean-bin — wipe all built binaries in bin/
-# Both together for a full reset: make clean clean-bin
 clean:
 	rm -rf $(OBJ_DIR)
-
-clean-bin:
 	rm -rf $(BIN_DIR)
