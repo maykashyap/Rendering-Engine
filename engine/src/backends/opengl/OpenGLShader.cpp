@@ -98,6 +98,8 @@ void OpenGLShader::setUniform(std::string_view name, float value) const {
 
 void OpenGLShader::setUniform(std::string_view name,
                               const Math::mat4x4f *matrix) const {
-  glUniformMatrix4fv(glGetUniformLocation(ID, name.data()), 1, GL_FALSE,
+  // Transposing is necessary because opengl expects matrices in a column
+  // sequence but I store my matrices in a row sequence.
+  glUniformMatrix4fv(glGetUniformLocation(ID, name.data()), 1, GL_TRUE,
                      matrix->c_array());
 }

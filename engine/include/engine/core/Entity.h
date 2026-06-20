@@ -27,11 +27,12 @@ public:
     auto property = std::make_unique<T>(std::forward<Args>(args)...);
 
     T &ref = *property;
-    m_propertyMap[std::string(property->getID())] = std::move(property);
+    std::string ID = std::string(property->getID());
+    m_propertyMap[ID] = std::move(property);
     return ref;
   }
   template <typename T> T *getProperty(std::string_view ID) const {
-    auto it = m_propertyMap.find(ID.data());
+    auto it = m_propertyMap.find(std::string(ID));
     if (it != m_propertyMap.end()) {
       return dynamic_cast<T *>(it->second.get());
     }
@@ -39,7 +40,7 @@ public:
   }
 
   void removeProperty(std::string_view ID) {
-    auto it = m_propertyMap.find(ID.data());
+    auto it = m_propertyMap.find(std::string(ID));
     if (it != m_propertyMap.end()) {
       m_propertyMap.erase(it);
     }
