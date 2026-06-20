@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "engine/core/BackendBuilder.h"
+#include "engine/core/IProperty.h"
 #include "engine/lib/vector.h"
 #include "engine/properties/Transform.h"
 
@@ -14,55 +15,9 @@ using namespace Engine;
 constexpr int WIDTH = 800;
 constexpr int HEIGHT = 600;
 
-void PrintMatrixEveryFrame(const Engine::Math::mat4x4f &matrix) {
-  static bool first_frame = true;
-
-  if (!first_frame) {
-    // 🟢 ANSI Escape Code: Move the terminal cursor UP 4 lines
-    std::cout << "\033[4A";
-  }
-  first_frame = false;
-
-  // Force floating point layout with a fixed precision
-  std::cout << std::fixed << std::setprecision(3);
-
-  for (std::size_t r = 0; r < 4; ++r) {
-    // Slam cursor to start of line, print opening bracket
-    std::cout << "\r| ";
-
-    for (std::size_t c = 0; c < 4; ++c) {
-      // std::setw(9) ensures every number takes exactly 9 characters of space.
-      // This keeps columns aligned even if a number changes from 0.000 to
-      // -125.451
-      std::cout << std::setw(9) << matrix(r, c) << " ";
-    }
-
-    // 🟢 ANSI Escape Code: \033[K clears the rest of the line to the right.
-    // This acts as the "ghost character eraser" if numbers shrink.
-    std::cout << "|\033[K\n";
-  }
-
-  // Force the terminal to draw the entire block immediately
-  std::cout << std::flush;
-}
-void PrintMatrix(const Math::mat4x4f &matrix) {
-  // Set fixed floating-point format with 3 decimal places
-  std::cout << std::fixed << std::setprecision(3);
-
-  std::cout << "Matrix 4x4:\n";
-  for (std::size_t r = 0; r < 4; ++r) {
-    std::cout << "| ";
-    for (std::size_t c = 0; c < 4; ++c) {
-      // Keeps columns perfectly aligned regardless of number size
-      std::cout << std::setw(9) << matrix(r, c) << " ";
-    }
-    std::cout << "|\n";
-  }
-  std::cout << std::endl; // Flushes the stream and adds a final spacing line
-}
-
 class Playground : public IScript {
   Entity square, triangle;
+  Property::Transform *squareTransformHandle = nullptr;
   BackendBuilder::t_Shader shader;
 
   float time = 0, deltaTime = 0, speed = 0.2f;
@@ -108,27 +63,28 @@ void Playground::Start() {
                                         "playground/shaders/fragment.frag");
 
   square.addProperty<Property::ShaderProgram>(shader.get());
-  auto &squareTransformHandle = square.addProperty<Property::Transform>();
+  // Dont forget to capture the address and not copy the return type. Maybe I
+  // will fix this in the future.
+  squareTransformHandle = &square.addProperty<Property::Transform>();
   square.addProperty<Property::Mesh>("Square Mesh", squareMesh);
 
   triangle.addProperty<Property::ShaderProgram>(shader.get());
   triangle.addProperty<Property::Transform>();
   triangle.addProperty<Property::Mesh>("Triangle Mesh", triangleMesh);
 
-  squareTransformHandle.scale = (Math::vec3f)0.4;
-  squareTransformHandle.rotation = Math::vec3f(0, 0, Math::PI / 4);
+  squareTransformHandle->scale = (Math::vec3f)0.4;
+  squareTransformHandle->rotation = Math::vec3f(0, 0, Math::PI / 4);
 
   speed = 1.0f;
 }
 
 void Playground::Update() {
 
+  // write a better time management system.
   deltaTime += executionHandle->getWindowHandle()->getTime() - time;
   time = executionHandle->getWindowHandle()->getTime();
 
   // You are a sexy man, never forget.
-  auto squareTransformHandle =
-      square.getProperty<Property::Transform>("Transform");
   squareTransformHandle->rotation = Math::vec3f(0, 0, speed * deltaTime);
   squareTransformHandle->translation = Math::vec3f(
       0.5 * cos(speed * deltaTime), 0.5 * sin(speed * deltaTime), 0);
