@@ -4,6 +4,8 @@
 #include "engine/properties/MeshProperty.h"
 #include "engine/properties/ShaderProperty.h"
 #include "engine/properties/Transform.h"
+#include <iomanip>
+#include <iostream>
 
 using namespace Engine;
 
@@ -35,19 +37,17 @@ void Execution::End() {
 }
 
 // ___________________________________________________________________
-// this is not opengl specific but i dont know where else to put this
 void Execution::submitEntity(const Entity &entity) {
-  auto *mesh = entity.getProperty<Property::Mesh>("Mesh");
-  auto *transform = entity.getProperty<Property::Transform>("Transform");
-  auto *shader = entity.getProperty<Property::ShaderProgram>("ShaderProgram");
+  auto *mesh = entity.getMesh();
+  auto *shader = entity.getShader();
 
   // Here you could check if the shader is null, you can use the global
   // shader.
 
-  if (mesh && transform) {
+  if (mesh && shader) {
     m_rendererHandle->submit({mesh->m_vahandle.get(),
                               shader->getShaderProgramHandle(),
-                              &transform->getTransformMatrix()});
+                              entity.getTransform().getTransformMatrix()});
   } else {
     throw std::runtime_error("what do you want me to do with this thing?");
   }

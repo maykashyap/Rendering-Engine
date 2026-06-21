@@ -3,6 +3,8 @@
 // Now there are a lot of ways to optimize this but i will just implement the
 // basic version i need for now
 
+#include "engine/lib/vector.h"
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -114,6 +116,34 @@ public:
     m_vertexCount = 0;
     m_indexCount = 0;
     m_stride = 0;
+  }
+};
+
+class MeshGenerator {
+public:
+  static Assets::Mesh createPolygon(int n, float scale) {
+    struct VertexPos {
+      Math::vec3f Pos;
+    };
+    Assets::VertexLayout layout = {{Assets::ComponentTypes::POSITION,
+                                    Assets::ComponentSize::Float2,
+                                    offsetof(VertexPos, Pos)}};
+    std::vector<float> vertices = {0.0f, 0.0f};
+    std::vector<uint32_t> indices;
+
+    float angle = (2 * Math::PI) / n;
+    for (int i = 1; i <= n; i++) {
+      vertices.push_back(scale * cos(i * angle));
+      vertices.push_back(scale * sin(i * angle));
+      if (i != 1) {
+        indices.push_back(0);
+        indices.push_back(i - 1);
+        indices.push_back(i);
+      }
+    }
+
+    Mesh mesh(vertices, indices, layout, sizeof(VertexPos));
+    return mesh;
   }
 };
 } // namespace Engine::Assets

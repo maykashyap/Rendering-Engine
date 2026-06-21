@@ -1,7 +1,6 @@
 #pragma once
 
 #include "matrix.h"
-#include "vector.h"
 #include <cmath>
 
 namespace Engine::Math {
@@ -26,4 +25,5 @@ inline mat3x3f rotationMatrixEuler(float pitch_angle, float yaw_angle,
 
   return yaw * pitch * roll;
 }
+
 } // namespace Engine::Math

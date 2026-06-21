@@ -1,0 +1,18 @@
+void PrintMatrixEveryFrame(const Math::mat4x4f &matrix) {
+  static bool first_frame = true;
+  if (!first_frame) {
+    std::cout << "\033[4A";
+  }
+  first_frame = false;
+  std::cout << std::fixed << std::setprecision(3);
+  for (std::size_t r = 0; r < 4; ++r) {
+    std::cout << "\r| ";
+
+    for (std::size_t c = 0; c < 4; ++c) {
+      std::cout << std::setw(9) << matrix(r, c) << " ";
+    }
+
+    std::cout << "|\033[K\n";
+  }
+  std::cout << std::flush;
+}

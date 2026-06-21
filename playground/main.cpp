@@ -17,7 +17,6 @@ constexpr int HEIGHT = 600;
 
 class Playground : public IScript {
   Entity square, triangle;
-  Property::Transform *squareTransformHandle = nullptr;
   BackendBuilder::t_Shader shader;
 
   float time = 0, deltaTime = 0, speed = 0.2f;
@@ -46,34 +45,22 @@ void Playground::Start() {
       -0.5f, -0.5f, 0.0f, 0.3, 0.5, 0.9, // bottom left
       -0.5f, 0.5f,  0.0f, 0.3, 0.5, 0.9  // top left
   };
+  // Please always keep in mind the faceculling settings
+  // wether it is cw or ccw
   std::vector<uint32_t> squareIndices = {0, 2, 1, 0, 3, 2};
   Assets::Mesh squareMesh(squareVertices, squareIndices, layout,
                           sizeof(VertexPosCol));
 
-  std::vector<float> triangleVertices = {0.0f,  0.5f,  0.0f, 0.5f, 1.0f, 0.5f,
-                                         0.5f,  -0.5f, 0.0f, 0.5f, 1.0f, 0.5f,
-                                         -0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 0.5f};
-  // Please always keep in mind the faceculling settings
-  // wether it is cw or ccw
-  std::vector<uint32_t> triangleIndices = {2, 1, 0};
-  Assets::Mesh triangleMesh(triangleVertices, triangleIndices, layout,
-                            sizeof(VertexPosCol));
-
   shader = BackendBuilder::createShader("./playground/shaders/vertex.vert",
                                         "playground/shaders/fragment.frag");
 
-  square.addProperty<Property::ShaderProgram>(shader.get());
+  square.setMesh("Square Mesh", squareMesh);
+  square.setShader(shader.get());
   // Dont forget to capture the address and not copy the return type. Maybe I
   // will fix this in the future.
-  squareTransformHandle = &square.addProperty<Property::Transform>();
-  square.addProperty<Property::Mesh>("Square Mesh", squareMesh);
+  // squareTransformHandle = &square.addProperty<Property::Transform>();
 
-  triangle.addProperty<Property::ShaderProgram>(shader.get());
-  triangle.addProperty<Property::Transform>();
-  triangle.addProperty<Property::Mesh>("Triangle Mesh", triangleMesh);
-
-  squareTransformHandle->scale = (Math::vec3f)0.4;
-  squareTransformHandle->rotation = Math::vec3f(0, 0, Math::PI / 4);
+  square.getTransform().scale = (Math::vec3f)0.4;
 
   speed = 1.0f;
 }
@@ -85,8 +72,8 @@ void Playground::Update() {
   time = executionHandle->getWindowHandle()->getTime();
 
   // You are a sexy man, never forget.
-  squareTransformHandle->rotation = Math::vec3f(0, 0, speed * deltaTime);
-  squareTransformHandle->translation = Math::vec3f(
+  square.getTransform().rotation = Math::vec3f(0, 0, speed * deltaTime);
+  square.getTransform().translation = Math::vec3f(
       0.5 * cos(speed * deltaTime), 0.5 * sin(speed * deltaTime), 0);
 
   // dont set uniforms here, the shader is not yet linked.
