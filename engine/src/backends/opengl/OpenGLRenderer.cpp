@@ -133,6 +133,7 @@ void OpenGLRenderer::flush() {
       // matrix here
     }
     // here you assign the shader mat4 uniform the translation matrix
+    command.shader->setUniform("anchor", command.anchor);
     command.shader->setUniform("transform", command.translation);
     command.shader->setUniform("aspectRatio", aspectRatio);
     command.vaHandle->bind();

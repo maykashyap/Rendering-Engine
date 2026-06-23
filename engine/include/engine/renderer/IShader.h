@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/lib/matrix.h"
+#include "engine/lib/vector.h"
 #include <string_view>
 namespace Engine::Assets {
 class IShader {
@@ -13,6 +14,8 @@ public:
   virtual void setUniform(std::string_view name, float val) const = 0;
   virtual void setUniform(std::string_view name,
                           const Math::mat4x4f *matrix) const = 0;
+  virtual void setUniform(std::string_view name,
+                          const Math::vec3f *vec3) const = 0;
 
   IShader(const IShader &) = delete;
   IShader &operator=(const IShader &) = delete;

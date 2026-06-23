@@ -35,6 +35,18 @@ template <typename Derived, typename T, std::size_t LEN> struct VecBase {
     return true;
   }
   bool operator!=(const Derived &rhs) const { return !(*this == rhs); }
+  // Component-wise vector * vector — all LEN components including w.
+  // Distinct from operator*=(T scalar) which only touches xyz on Vec4.
+  Derived &operator*=(const Derived &rhs) {
+    for (std::size_t i = 0; i < LEN; ++i)
+      (*this)[i] *= rhs[i];
+    return *static_cast<Derived *>(this);
+  }
+
+  friend Derived operator*(Derived lhs, const Derived &rhs) {
+    lhs *= rhs;
+    return lhs;
+  }
 
   friend Derived operator+(Derived lhs, const Derived &rhs) {
     lhs += rhs;
@@ -53,6 +65,46 @@ protected:
   VecBase() = default;
 };
 
+template <typename T, std::size_t N> struct VecN : VecBase<VecN<T, N>, T, N> {
+  T data[N]{};
+
+  VecN() = default;
+  explicit VecN(T scalar) {
+    for (std::size_t i = 0; i < N; ++i)
+      data[i] = scalar;
+  }
+  template <typename Derived>
+  operator Derived() const
+    requires std::is_base_of_v<VecBase<Derived, T, N>, Derived>
+  {
+    Derived result;
+    for (std::size_t i = 0; i < N; ++i)
+      result[i] = data[i];
+    return result;
+  }
+
+  VecN &operator+=(const VecN &rhs) {
+    for (std::size_t i = 0; i < N; ++i)
+      data[i] += rhs.data[i];
+    return *this;
+  }
+  VecN &operator+=(T scalar) {
+    for (std::size_t i = 0; i < N; ++i)
+      data[i] += scalar;
+    return *this;
+  }
+  VecN &operator*=(T scalar) {
+    for (std::size_t i = 0; i < N; ++i)
+      data[i] *= scalar;
+    return *this;
+  }
+  VecN &operator*=(const VecN &rhs) {
+    for (std::size_t i = 0; i < N; ++i)
+      data[i] *= rhs.data[i];
+    return *this;
+  }
+};
+
 // ── Vec2 ───────────────────────────────────────────────────────────────────
 template <typename T> struct Vec2 : VecBase<Vec2<T>, T, 2> {
 
@@ -69,6 +121,7 @@ template <typename T> struct Vec2 : VecBase<Vec2<T>, T, 2> {
   }
   Vec2(T x, T y) : x(x), y(y) {}
   explicit Vec2(T scalar) : x(scalar), y(scalar) {}
+  Vec2(const VecN<T, 2> &v) : x(v[0]), y(v[1]) {}
 
   Vec2 &operator+=(const Vec2 &rhs) {
     x += rhs.x;
@@ -100,6 +153,7 @@ template <typename T> struct Vec2 : VecBase<Vec2<T>, T, 2> {
     Vec2 out = *this;
     return out.normalize();
   }
+  using VecBase<Vec2<T>, T, 2>::operator*=;
 };
 
 // ── Vec3 ───────────────────────────────────────────────────────────────────
@@ -120,6 +174,7 @@ template <typename T> struct Vec3 : VecBase<Vec3<T>, T, 3> {
   Vec3(T x, T y, T z) : x(x), y(y), z(z) {}
   explicit Vec3(T scalar) : x(scalar), y(scalar), z(scalar) {}
   Vec3(const Vec2<T> &v, T z = T(0)) : x(v.x), y(v.y), z(z) {}
+  Vec3(const VecN<T, 3> &v) : x(v[0]), y(v[1]), z(v[2]) {}
 
   Vec3 &operator+=(const Vec3 &rhs) {
     x += rhs.x;
@@ -133,6 +188,7 @@ template <typename T> struct Vec3 : VecBase<Vec3<T>, T, 3> {
     z += scalar;
     return *this;
   }
+  using VecBase<Vec3<T>, T, 3>::operator*=;
   Vec3 &operator*=(T scalar) {
     x *= scalar;
     y *= scalar;
@@ -191,6 +247,7 @@ template <typename T> struct alignas(16) Vec4 : VecBase<Vec4<T>, T, 4> {
     if (it != list.end())
       w = *it++;
   }
+  Vec4(const VecN<T, 4> &v) : x(v[0]), y(v[1]), z(v[2]), w(v[3]) {}
 
   // explicit — prevents accidental scalar → VectorH implicit conversion.
   // w = 1: scalar construction is a point, not a direction.
@@ -221,6 +278,7 @@ template <typename T> struct alignas(16) Vec4 : VecBase<Vec4<T>, T, 4> {
     z += scalar;
     return *this;
   }
+  using VecBase<Vec4<T>, T, 4>::operator*=;
   Vec4 &operator*=(T scalar) {
     x *= scalar;
     y *= scalar;

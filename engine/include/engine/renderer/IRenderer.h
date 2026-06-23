@@ -3,6 +3,7 @@
 #pragma once
 
 #include "engine/lib/matrix.h"
+#include "engine/lib/vector.h"
 #include "engine/renderer/IShader.h"
 #include <cstdint>
 namespace Engine::Renderer {
@@ -20,6 +21,7 @@ struct RendererCommand {
   const Assets::IShader *shader;
   const Math::mat4x4f *translation; // at this stage of the code I doubt you
                                     // would/should alter this matrix.
+  const Math::vec3f *anchor;
 };
 
 class IRenderer {

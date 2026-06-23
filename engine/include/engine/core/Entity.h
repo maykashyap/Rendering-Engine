@@ -17,7 +17,7 @@ public:
   // the delete handler is default, and that shouldnt matter for me.
   using t_Property = std::unique_ptr<IProperty>;
 
-  Entity() = default;
+  Entity() { m_transform.setOwner(this); };
   // Entity(std::string name) : m_name(std::move(name)) {}
   ~Entity() = default;
 
@@ -29,10 +29,12 @@ public:
 
   template <typename... Args> void setMesh(Args &&...args) {
     m_mesh = std::make_unique<Property::Mesh>(std::forward<Args>(args)...);
+    m_mesh->setOwner(this);
   }
   template <typename... Args> void setShader(Args &&...args) {
     m_shader =
         std::make_unique<Property::ShaderProgram>(std::forward<Args>(args)...);
+    m_shader->setOwner(this);
   }
   // In the future I will implement a way to add property name on addition but
   // for now the best way is to just declare it in the Property class
@@ -42,6 +44,7 @@ public:
 
     auto property = std::make_unique<T>(std::forward<Args>(args)...);
 
+    property->setOwner(this);
     T &ref = *property;
     std::string ID = std::string(property->getID());
     m_propertyMap[ID] = std::move(property);
@@ -72,6 +75,9 @@ public:
     }
   }
 
+  void setParent(const Entity *parent) { m_parent = parent; }
+  const Entity *getParent() const { return m_parent; }
+
   // [[nodiscard]] const std::string &getName() const { return m_name; }
 
 private:
@@ -80,6 +86,8 @@ private:
   Property::Transform m_transform;
   std::unique_ptr<Property::Mesh> m_mesh = nullptr;
   std::unique_ptr<Property::ShaderProgram> m_shader = nullptr;
+
+  const Entity *m_parent = nullptr;
 
   std::unordered_map<std::string, t_Property> m_propertyMap;
 };

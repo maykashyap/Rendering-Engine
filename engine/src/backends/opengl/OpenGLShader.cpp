@@ -103,3 +103,8 @@ void OpenGLShader::setUniform(std::string_view name,
   glUniformMatrix4fv(glGetUniformLocation(ID, name.data()), 1, GL_TRUE,
                      matrix->c_array());
 }
+
+void OpenGLShader::setUniform(std::string_view name,
+                              const Math::vec3f *vec3) const {
+  glUniform3fv(glGetUniformLocation(ID, name.data()), 1, vec3->c_array());
+}

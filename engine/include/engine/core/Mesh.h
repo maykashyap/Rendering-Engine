@@ -4,10 +4,15 @@
 // basic version i need for now
 
 #include "engine/lib/vector.h"
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <exception>
+#include <iostream>
+#include <numbers>
+#include <ostream>
 #include <stdexcept>
 #include <strings.h>
 #include <vector>
@@ -109,6 +114,7 @@ public:
     // A mesh is empty if it has no vertices or no indices to draw
     return m_indices.empty() || m_vertices.empty();
   }
+
   void clearMesh() noexcept {
     m_vertices.clear();
     m_indices.clear();
@@ -121,9 +127,10 @@ public:
 
 class MeshGenerator {
 public:
-  static Assets::Mesh createPolygon(int n, float scale) {
+  template <int N> static Assets::Mesh Polygon() {
+    static_assert(N >= 3, "A polygon must have 3 or more sides");
     struct VertexPos {
-      Math::vec3f Pos;
+      Math::vec2f Pos;
     };
     Assets::VertexLayout layout = {{Assets::ComponentTypes::POSITION,
                                     Assets::ComponentSize::Float2,
@@ -131,19 +138,29 @@ public:
     std::vector<float> vertices = {0.0f, 0.0f};
     std::vector<uint32_t> indices;
 
-    float angle = (2 * Math::PI) / n;
-    for (int i = 1; i <= n; i++) {
-      vertices.push_back(scale * cos(i * angle));
-      vertices.push_back(scale * sin(i * angle));
-      if (i != 1) {
-        indices.push_back(0);
-        indices.push_back(i - 1);
-        indices.push_back(i);
-      }
+    constexpr float angle = (2.0f * std::numbers::pi) / static_cast<float>(N);
+    for (int i = 1; i <= N; i++) {
+      vertices.push_back(cos(i * angle));
+      vertices.push_back(sin(i * angle));
+      indices.push_back(0);
+      indices.push_back(i);
+      indices.push_back(i + 1 > N ? 1 : i + 1);
     }
 
     Mesh mesh(vertices, indices, layout, sizeof(VertexPos));
     return mesh;
+  }
+  static Assets::Mesh Square() {
+    struct VertexPos {
+      Math::vec2f Pos;
+    };
+    Assets::VertexLayout layout = {{Assets::ComponentTypes::POSITION,
+                                    Assets::ComponentSize::Float2,
+                                    offsetof(VertexPos, Pos)}};
+    std::vector<float> vertices = {1.0f,  1.0f,  -1.0f, 1.0f,
+                                   -1.0f, -1.0f, 1.0f,  -1.0f};
+    std::vector<uint32_t> indices = {0, 1, 2, 3, 0, 2};
+    return Mesh(vertices, indices, layout, sizeof(VertexPos));
   }
 };
 } // namespace Engine::Assets

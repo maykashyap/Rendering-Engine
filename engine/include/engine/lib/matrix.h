@@ -196,6 +196,17 @@ public:
       result(i, i) = T(1); // T(i) in original was a bug — set to 1 not i
     return result;
   }
+  template <typename VecType, std::size_t Length>
+  static Matrix ScalingMatrix(const VecBase<VecType, T, Length> &vector)
+    requires(Rows == Columns)
+  {
+    static_assert(Length <= Rows,
+                  "Vector length must not exceed matrix dimension.");
+    Matrix result;
+    for (std::size_t i = 0; i < Length; ++i)
+      result(i, i) = vector[i];
+    return result;
+  }
 
   // ── Unimplemented — add as needed ─────────────────────────────────────
   T determinant() const;
@@ -205,6 +216,15 @@ public:
 };
 
 // ── Free functions ─────────────────────────────────────────────────────────
+template <typename T, std::size_t Rows, std::size_t Columns, typename Derived>
+inline VecN<T, Rows> operator*(const Matrix<T, Rows, Columns> &mat,
+                               const VecBase<Derived, T, Columns> &vec) {
+  VecN<T, Rows> result(T(0));
+  for (std::size_t r = 0; r < Rows; ++r)
+    for (std::size_t c = 0; c < Columns; ++c)
+      result[r] += mat(r, c) * vec[c];
+  return result;
+}
 
 template <typename T, std::size_t Rows, std::size_t Columns>
 inline Matrix<T, Rows, Columns> operator+(Matrix<T, Rows, Columns> lhs,

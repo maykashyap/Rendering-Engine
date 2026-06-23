@@ -45,9 +45,9 @@ void Execution::submitEntity(const Entity &entity) {
   // shader.
 
   if (mesh && shader) {
-    m_rendererHandle->submit({mesh->m_vahandle.get(),
-                              shader->getShaderProgramHandle(),
-                              entity.getTransform().getTransformMatrix()});
+    m_rendererHandle->submit(
+        {mesh->getVAHandle(), shader->getShaderProgramHandle(),
+         entity.getTransform().getTransformMatrix(), &mesh->getAnchor()});
   } else {
     throw std::runtime_error("what do you want me to do with this thing?");
   }

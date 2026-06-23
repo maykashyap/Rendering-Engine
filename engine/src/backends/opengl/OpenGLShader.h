@@ -23,5 +23,7 @@ public:
   void setUniform(std::string_view name, float val) const override;
   void setUniform(std::string_view name,
                   const Math::mat4x4f *matrix) const override;
+  void setUniform(std::string_view name,
+                  const Math::vec3f *vec3) const override;
 };
 } // namespace Engine::Backend

@@ -46,7 +46,7 @@ void GLFWWindow::create() {
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   // glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_WAYLAND);
 
-  glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+  // glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
 
   handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
   if (handle == nullptr) {

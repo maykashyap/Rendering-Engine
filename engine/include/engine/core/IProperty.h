@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Entity.h"
 #include <string>
 #include <string_view>
 namespace Engine {
