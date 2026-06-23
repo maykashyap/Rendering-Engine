@@ -134,9 +134,11 @@ void OpenGLRenderer::flush() {
     }
     // here you assign the shader mat4 uniform the translation matrix
     command.shader->setUniform("anchor", command.anchor);
-    command.shader->setUniform("transform", command.translation);
+    command.shader->setUniform("transform",
+                               command.translation->getTransformMatrix());
     command.shader->setUniform("aspectRatio", aspectRatio);
     command.vaHandle->bind();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES,
                    static_cast<GLsizei>(command.vaHandle->getIndexCount()),
                    GL_UNSIGNED_INT, 0);

@@ -17,11 +17,15 @@ public:
   Execution(Renderer::IRenderer &ra, IWindow &wa)
       : m_rendererHandle(&ra), m_windowHandle(&wa) {}
   ~Execution() = default;
-
+  void registerEntity(const Entity &entity) {
+    m_entityRegistry.push_back(&entity);
+  }
   template <typename T, typename... Args> void injectScript(Args &&...args) {
     static_assert(std::is_base_of_v<IScript, T>,
                   "Injectable scripts must inherit Engine::IScript.");
-    m_ScriptStack.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+    auto script = std::make_unique<T>(std::forward<Args>(args)...);
+    script->executionHandle = this;
+    m_ScriptStack.push_back(std::move(script));
   }
   template <typename T> T *getScript() {
     for (const auto &script : m_ScriptStack) {
@@ -42,6 +46,7 @@ public:
   void End();
 
 private:
+  std::vector<const Entity *> m_entityRegistry;
   Renderer::IRenderer *m_rendererHandle;
   IWindow *m_windowHandle;
   std::vector<t_Script> m_ScriptStack;

@@ -14,6 +14,7 @@ class IProperty; // forward declaration because headers are being included
                  // awkwardly
 class Entity {
 public:
+  bool isEnabled = true;
   // the delete handler is default, and that shouldnt matter for me.
   using t_Property = std::unique_ptr<IProperty>;
 

@@ -10,7 +10,6 @@
 using namespace Engine;
 
 void Execution::Start() {
-  IScript::executionHandle = this;
   for (const auto &i : m_ScriptStack) {
     i->Start();
   }
@@ -20,8 +19,11 @@ void Execution::Update() {
   while (!m_windowHandle->shouldClose()) {
     m_rendererHandle->clear(0.85, 0.85, 0.45, 1);
     m_rendererHandle->sceneStart(Math::mat4x4f::Identity());
-    for (const auto &i : m_ScriptStack) {
+    for (const auto &i : m_ScriptStack)
       i->Update();
+    for (const Entity *entity : m_entityRegistry) {
+      if (entity->isEnabled)
+        submitEntity(*entity);
     }
     m_rendererHandle->sceneEnd();
     m_windowHandle->swapBuffers();
@@ -45,9 +47,9 @@ void Execution::submitEntity(const Entity &entity) {
   // shader.
 
   if (mesh && shader) {
-    m_rendererHandle->submit(
-        {mesh->getVAHandle(), shader->getShaderProgramHandle(),
-         entity.getTransform().getTransformMatrix(), &mesh->getAnchor()});
+    m_rendererHandle->submit({mesh->getVAHandle(),
+                              shader->getShaderProgramHandle(),
+                              &entity.getTransform(), &mesh->getAnchor()});
   } else {
     throw std::runtime_error("what do you want me to do with this thing?");
   }

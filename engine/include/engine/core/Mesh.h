@@ -127,7 +127,7 @@ public:
 
 class MeshGenerator {
 public:
-  template <int N> static Assets::Mesh Polygon() {
+  template <int N> static Assets::Mesh Polygon(float angleOffset) {
     static_assert(N >= 3, "A polygon must have 3 or more sides");
     struct VertexPos {
       Math::vec2f Pos;
@@ -140,8 +140,8 @@ public:
 
     constexpr float angle = (2.0f * std::numbers::pi) / static_cast<float>(N);
     for (int i = 1; i <= N; i++) {
-      vertices.push_back(cos(i * angle));
-      vertices.push_back(sin(i * angle));
+      vertices.push_back(cos(i * angle + angleOffset));
+      vertices.push_back(sin(i * angle + angleOffset));
       indices.push_back(0);
       indices.push_back(i);
       indices.push_back(i + 1 > N ? 1 : i + 1);

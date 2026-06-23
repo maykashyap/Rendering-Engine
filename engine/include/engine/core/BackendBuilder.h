@@ -13,7 +13,7 @@
 namespace Engine {
 class BackendBuilder {
 public:
-  using t_Shader = std::unique_ptr<Assets::IShader>;
+  using t_Shader = std::shared_ptr<Assets::IShader>;
   using t_Window = std::unique_ptr<IWindow>;
   using t_Renderer = std::unique_ptr<Renderer::IRenderer>;
   using t_VAHandle = std::unique_ptr<Renderer::IGPUVertexArrayHandle>;

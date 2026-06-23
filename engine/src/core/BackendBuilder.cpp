@@ -14,13 +14,13 @@ std::unique_ptr<IWindow> BackendBuilder::createWindow(int width, int height,
   return std::make_unique<Backend::GLFWWindow>(width, height, title);
 }
 
-std::unique_ptr<Assets::IShader>
+BackendBuilder::t_Shader
 BackendBuilder::createShader(std::string_view vertexPath,
                              std::string_view fragmentPath) {
-  return std::make_unique<Backend::OpenGLShader>(vertexPath, fragmentPath);
+  return std::make_shared<Backend::OpenGLShader>(vertexPath, fragmentPath);
 }
 
-std::unique_ptr<Renderer::IGPUVertexArrayHandle>
+BackendBuilder::t_VAHandle
 BackendBuilder::createVertexArrayHandle(const Assets::Mesh &mesh) {
   return std::make_unique<Backend::OpenGLGPUVAHandle>(mesh);
 }

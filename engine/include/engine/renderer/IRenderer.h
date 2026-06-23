@@ -4,6 +4,7 @@
 
 #include "engine/lib/matrix.h"
 #include "engine/lib/vector.h"
+#include "engine/properties/Transform.h"
 #include "engine/renderer/IShader.h"
 #include <cstdint>
 namespace Engine::Renderer {
@@ -19,8 +20,8 @@ public:
 struct RendererCommand {
   IGPUVertexArrayHandle *vaHandle;
   const Assets::IShader *shader;
-  const Math::mat4x4f *translation; // at this stage of the code I doubt you
-                                    // would/should alter this matrix.
+  const Property::Transform *translation; // at this stage of the code I doubt
+                                          // you would/should alter this matrix.
   const Math::vec3f *anchor;
 };
 
