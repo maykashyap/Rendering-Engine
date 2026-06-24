@@ -19,6 +19,9 @@ void Execution::Update() {
   while (!m_windowHandle->shouldClose()) {
     m_rendererHandle->clear(0.85, 0.85, 0.45, 1);
     m_rendererHandle->sceneStart(Math::mat4x4f::Identity());
+    // Needs to happen before entity submission.
+    for (const Entity *entity : m_entityRegistry)
+      entity->getTransform().markDirty();
     for (const auto &i : m_ScriptStack)
       i->Update();
     for (const Entity *entity : m_entityRegistry) {

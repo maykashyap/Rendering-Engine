@@ -8,23 +8,23 @@ using namespace Engine::Property;
 using namespace Engine::Math;
 
 const mat4x4f *Transform::getTransformMatrix() const {
+  if (!m_dirty)
+    return &transform;
   vec3f localTranslation = getGlobalTranslation();
-  mat3x3f rotationMatrix =
-      Math::rotationMatrixEuler(rotation.x, rotation.y, rotation.z);
-  mat3x3f scaleMatrix({scale.x, 0, 0, 0, scale.y, 0, 0, 0, scale.z});
+  mat3x3f rotationMatrix = Math::rotationMatrixEuler(rotation);
+  mat3x3f scaleMatrix = mat3x3f::ScalingMatrix(scale);
   transform = rotationMatrix * scaleMatrix;
   transform.setTranslation(localTranslation);
+  m_dirty = false;
   return &transform;
 }
 
 vec3f Transform::getGlobalTranslation() const {
-  vec3f localTranslation = translation;
+  auto localTranslation = Vec4<float>(translation);
   if (m_owner->getParent()) {
-    auto ownerTransform = m_owner->getParent()->getTransform();
-    localTranslation =
-        ownerTransform.getGlobalTranslation() +
-        rotationMatrixEuler(ownerTransform.rotation) *
-            (mat3x3f::ScalingMatrix(ownerTransform.scale) * translation);
+    auto ownerTransform =
+        m_owner->getParent()->getTransform().getTransformMatrix();
+    localTranslation = ownerTransform->transform(translation);
   }
-  return localTranslation;
+  return vec3f(localTranslation.x, localTranslation.y, localTranslation.z);
 }

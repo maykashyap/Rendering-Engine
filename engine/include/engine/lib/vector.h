@@ -11,15 +11,50 @@ namespace Engine::Math {
 constexpr double EPSILON = 1e-9;
 constexpr double PI = std::numbers::pi;
 
-// ── CRTP Base ──────────────────────────────────────────────────────────────
+/**
+ * @brief CRTP Base for all Vector Types.
+ * Fixed length Vectors up to 4 dimensions have named members (eg. x, y for
+ * Vec2). The challenge is to have a base class that defines common
+ * functionality. I could have a data array in the base class, but the primary
+ * storage method is not the array directly but with an abstraction of the union
+ * and the anonymous struct. So you just provide the base class with a subclass
+ * handle and now you have access to all its members and function to do with as
+ * you please.
+ *
+ * @tparam Derived  Child Class
+ * @tparam T        Data type
+ * @tparam LEN      Length of the vector
+ */
 template <typename Derived, typename T, std::size_t LEN> struct VecBase {
 
+  /**
+   * @brief Access vector member by index (0-indexed).
+   *
+   * @param i index
+   * @return By reference.
+   */
   T &operator[](std::size_t i) { return static_cast<Derived *>(this)->data[i]; }
+  /**
+   * @brief const access vector member by index (0-indexed).
+   *
+   * @param i index
+   * @return Const by reference.
+   */
   const T &operator[](std::size_t i) const {
     return static_cast<const Derived *>(this)->data[i];
   }
 
+  /**
+   * @brief raw c-style array
+   *
+   * @return pointer to data array.
+   */
   T *c_array() { return static_cast<Derived *>(this)->data; }
+  /**
+   * @brief const raw c-style array
+   *
+   * @return const pointer to data array.
+   */
   const T *c_array() const { return static_cast<const Derived *>(this)->data; }
 
   Derived &operator=(T value) {
@@ -37,6 +72,14 @@ template <typename Derived, typename T, std::size_t LEN> struct VecBase {
   bool operator!=(const Derived &rhs) const { return !(*this == rhs); }
   // Component-wise vector * vector — all LEN components including w.
   // Distinct from operator*=(T scalar) which only touches xyz on Vec4.
+  /**
+   * @brief Component-wise vector * vector
+   * all LEN components including w.
+   * Distinct from operator*=(T scalar) which only touches xyz on Vec4.
+   *
+   * @param rhs
+   * @return reference of this
+   */
   Derived &operator*=(const Derived &rhs) {
     for (std::size_t i = 0; i < LEN; ++i)
       (*this)[i] *= rhs[i];
@@ -73,6 +116,11 @@ template <typename T, std::size_t N> struct VecN : VecBase<VecN<T, N>, T, N> {
     for (std::size_t i = 0; i < N; ++i)
       data[i] = scalar;
   }
+  /**
+   * @brief implicit cast from VecN to Vec
+   *
+   * @tparam Derived
+   */
   template <typename Derived>
   operator Derived() const
     requires std::is_base_of_v<VecBase<Derived, T, N>, Derived>
@@ -141,6 +189,11 @@ template <typename T> struct Vec2 : VecBase<Vec2<T>, T, 2> {
 
   T magnitude() const { return std::sqrt(x * x + y * y); }
 
+  /**
+   * @brief normalize vector and write to self.
+   *
+   * @return refrence to this
+   */
   Vec2 &normalize() {
     T mag = magnitude();
     if (mag > static_cast<T>(EPSILON)) {
@@ -149,6 +202,11 @@ template <typename T> struct Vec2 : VecBase<Vec2<T>, T, 2> {
     }
     return *this;
   }
+  /**
+   * @brief Normalize vector to a copy
+   *
+   * @return a normalized version of the vector
+   */
   Vec2 normalized() const {
     Vec2 out = *this;
     return out.normalize();
