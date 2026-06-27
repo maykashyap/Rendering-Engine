@@ -3,16 +3,12 @@
 // Now there are a lot of ways to optimize this but i will just implement the
 // basic version i need for now
 
-#include "engine/lib/vector.h"
-#include <algorithm>
+#include "engine/lib/math/vector.h"
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <exception>
-#include <iostream>
 #include <numbers>
-#include <ostream>
 #include <stdexcept>
 #include <strings.h>
 #include <vector>

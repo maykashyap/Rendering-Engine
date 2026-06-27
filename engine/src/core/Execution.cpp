@@ -1,11 +1,10 @@
 #include "engine/core/Execution.h"
 #include "engine/core/IScript.h"
-#include "engine/lib/matrix.h"
+#include "engine/properties/CameraProperty.h"
 #include "engine/properties/MeshProperty.h"
 #include "engine/properties/ShaderProperty.h"
 #include "engine/properties/Transform.h"
-#include <iomanip>
-#include <iostream>
+#include <stdexcept>
 
 using namespace Engine;
 
@@ -18,13 +17,18 @@ void Execution::Start() {
 void Execution::Update() {
   while (!m_windowHandle->shouldClose()) {
     m_rendererHandle->clear(0.85, 0.85, 0.45, 1);
-    m_rendererHandle->sceneStart(Math::mat4x4f::Identity());
+    if (!m_cameraHandle)
+      throw std::runtime_error("No camera attached to execution.");
     // Needs to happen before entity submission.
-    for (const Entity *entity : m_entityRegistry)
+    // and currently also before view calculation.
+    for (const Entity *entity : m_renderables)
       entity->getTransform().markDirty();
+    m_cameraHandle->setView();
+    m_rendererHandle->sceneStart(m_cameraHandle->getViewMatrix(),
+                                 m_cameraHandle->getProjectionMatrix());
     for (const auto &i : m_ScriptStack)
       i->Update();
-    for (const Entity *entity : m_entityRegistry) {
+    for (const Entity *entity : m_renderables) {
       if (entity->isEnabled)
         submitEntity(*entity);
     }

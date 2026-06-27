@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/lib/vector.h"
+#include "vector.h"
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -193,7 +193,7 @@ public:
   {
     Matrix result;
     for (std::size_t i = 0; i < Rows; ++i)
-      result(i, i) = T(1); // T(i) in original was a bug — set to 1 not i
+      result(i, i) = T(1);
     return result;
   }
   template <typename VecType, std::size_t Length>

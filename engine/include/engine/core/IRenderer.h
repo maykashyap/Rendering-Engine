@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "engine/lib/matrix.h"
-#include "engine/lib/vector.h"
+#include "engine/assets/IShader.h"
+#include "engine/lib/math/matrix.h"
+#include "engine/lib/math/vector.h"
 #include "engine/properties/Transform.h"
-#include "engine/renderer/IShader.h"
 #include <cstdint>
 namespace Engine::Renderer {
 class IGPUVertexArrayHandle {
@@ -20,8 +20,7 @@ public:
 struct RendererCommand {
   IGPUVertexArrayHandle *vaHandle;
   const Assets::IShader *shader;
-  const Property::Transform *translation; // at this stage of the code I doubt
-                                          // you would/should alter this matrix.
+  const Property::Transform *translation;
   const Math::vec3f *anchor;
 };
 
@@ -37,7 +36,8 @@ public:
   virtual void setViewport(uint32_t x, uint32_t y, uint32_t width,
                            uint32_t height) = 0;
   virtual void clear(float r, float g, float b, float a) = 0;
-  virtual void sceneStart(const Math::mat4x4f &projectionMatrix) = 0;
+  virtual void sceneStart(const Math::mat4x4f &viewMatrix,
+                          const Math::mat4x4f &projectionMatrix) = 0;
   virtual void sceneEnd() = 0;
   virtual void submit(const RendererCommand &command) = 0;
 };

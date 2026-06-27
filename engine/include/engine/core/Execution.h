@@ -1,8 +1,9 @@
 #pragma once
 
 #include "engine/core/Entity.h"
+#include "engine/core/IRenderer.h"
 #include "engine/core/IScript.h"
-#include "engine/renderer/IRenderer.h"
+#include "engine/properties/CameraProperty.h"
 #include "engine/window/IWindow.h"
 #include <memory>
 #include <stdexcept>
@@ -18,7 +19,7 @@ public:
       : m_rendererHandle(&ra), m_windowHandle(&wa) {}
   ~Execution() = default;
   void registerEntity(const Entity &entity) {
-    m_entityRegistry.push_back(&entity);
+    m_renderables.push_back(&entity);
   }
   template <typename T, typename... Args> void injectScript(Args &&...args) {
     static_assert(std::is_base_of_v<IScript, T>,
@@ -39,14 +40,19 @@ public:
   }
   Renderer::IRenderer *getRendererHandle() { return m_rendererHandle; }
   IWindow *getWindowHandle() { return m_windowHandle; }
+
   void submitEntity(const Entity &entity);
+  void attachCamera(Property::CameraProperty &cameraProperty) {
+    m_cameraHandle = &cameraProperty;
+  }
 
   void Start();
   void Update();
   void End();
 
 private:
-  std::vector<const Entity *> m_entityRegistry;
+  std::vector<const Entity *> m_renderables;
+  Property::CameraProperty *m_cameraHandle = nullptr;
   Renderer::IRenderer *m_rendererHandle;
   IWindow *m_windowHandle;
   std::vector<t_Script> m_ScriptStack;

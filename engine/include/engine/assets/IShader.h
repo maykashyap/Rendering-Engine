@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engine/lib/matrix.h"
-#include "engine/lib/vector.h"
+#include "engine/lib/math/matrix.h"
+#include "engine/lib/math/vector.h"
 #include <string_view>
 namespace Engine::Assets {
 class IShader {

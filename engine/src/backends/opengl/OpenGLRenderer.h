@@ -1,8 +1,8 @@
 #pragma once
 
-#include "engine/core/Mesh.h"
-#include "engine/lib/matrix.h"
-#include "engine/renderer/IRenderer.h"
+#include "engine/assets/Mesh.h"
+#include "engine/core/IRenderer.h"
+#include "engine/lib/math/matrix.h"
 #include "glad/glad.h"
 #include <cstdint>
 
@@ -30,8 +30,7 @@ public:
 
 class OpenGLRenderer final : public Renderer::IRenderer {
 private:
-  Math::mat4x4f m_projectionMatrix;
-  float aspectRatio;
+  Math::mat4x4f m_viewProjection;
   std::vector<Renderer::RendererCommand> m_renderQueue;
 
   void flush();
@@ -44,7 +43,8 @@ public:
   void setViewport(uint32_t x, uint32_t y, uint32_t width,
                    uint32_t height) override;
   void clear(float r, float g, float b, float a) override;
-  void sceneStart(const Math::mat4x4f &projectionMatrix) override;
+  void sceneStart(const Math::mat4x4f &viewMatrix,
+                  const Math::mat4x4f &projectionMatrix) override;
   void sceneEnd() override;
   void submit(const Renderer::RendererCommand &command) override;
 };

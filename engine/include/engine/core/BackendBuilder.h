@@ -1,10 +1,10 @@
 #pragma once
 
-#include "engine/renderer/IRenderer.h"
-#include "engine/renderer/IShader.h"
+#include "engine/assets/IShader.h"
+#include "engine/core/IRenderer.h"
 #include "engine/window/IWindow.h"
 
-#include "engine/core/Mesh.h"
+#include "engine/assets/Mesh.h"
 #include <memory>
 #include <string_view>
 

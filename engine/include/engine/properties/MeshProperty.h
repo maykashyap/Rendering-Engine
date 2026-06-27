@@ -1,10 +1,10 @@
 #pragma once
 
+#include "engine/assets/Mesh.h"
 #include "engine/core/BackendBuilder.h"
-#include "engine/core/IProperty.h"
-#include "engine/core/Mesh.h"
-#include "engine/lib/vector.h"
-#include "engine/renderer/IRenderer.h"
+#include "engine/core/IRenderer.h"
+#include "engine/lib/math/vector.h"
+#include "engine/properties/IProperty.h"
 #include <string>
 #include <string_view>
 namespace Engine::Property {

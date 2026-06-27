@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IProperty.h"
+#include "engine/properties/IProperty.h"
 #include "engine/properties/MeshProperty.h"
 #include "engine/properties/ShaderProperty.h"
 #include "engine/properties/Transform.h"

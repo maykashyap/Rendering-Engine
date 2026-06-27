@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engine/lib/matrix.h"
-#include "engine/renderer/IShader.h"
+#include "engine/assets/IShader.h"
+#include "engine/lib/math/matrix.h"
 #include "glad/glad.h"
 #include <string_view>
 

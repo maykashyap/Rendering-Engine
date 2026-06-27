@@ -1,6 +1,5 @@
 #include "OpenGLShader.h"
-#include "OpenGLRenderer.h"
-#include "engine/lib/matrix.h"
+#include "engine/lib/math/matrix.h"
 #include <fstream>
 #include <stdexcept>
 

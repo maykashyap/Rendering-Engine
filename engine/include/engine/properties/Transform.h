@@ -1,8 +1,8 @@
 #pragma once
 
-#include "engine/core/IProperty.h"
-#include "engine/lib/matrix.h"
-#include "engine/lib/vector.h"
+#include "IProperty.h"
+#include "engine/lib/math/matrix.h"
+#include "engine/lib/math/vector.h"
 namespace Engine::Property {
 using namespace Engine::Math;
 class Transform : public IProperty {
@@ -29,8 +29,25 @@ public:
       : translation(translate), scale(scale), rotation(rotate) {
     ID = "Transform";
   }
+  /**
+   * @brief apply T * S * R into a matrix and return. Parent conscious.
+   *
+   * @return the Transform as mat4x4
+   */
   const mat4x4f *getTransformMatrix() const;
+  /**
+   * @brief Transform member is parent relative if one exists. This function
+   * returns the raw world coordinate of that transform. Traverses the
+   * heierarchy to get it.
+   *
+   * @return vector 3 as translation
+   */
   vec3f getGlobalTranslation() const;
   void markDirty() const { m_dirty = true; }
+  // I just need this in the camera property. Also currently transform is only
+  // marked dirty explicitly at frame which serves us well enough for recursive
+  // getGlobalTranslation calculations each frames, but does not prevent
+  // unecesasry recalculations between frames.
+  bool isDirty() const { return m_dirty; }
 };
 } // namespace Engine::Property

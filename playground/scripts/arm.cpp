@@ -4,8 +4,9 @@
 using namespace Engine;
 
 void Arm::Start() {
-  auto shader = BackendBuilder::createShader(
-      "./playground/shaders/vertex.vert", "playground/shaders/fragment.frag");
+  auto shader =
+      BackendBuilder::createShader("playground/shaders/vertex/vertex2d.vert",
+                                   "playground/shaders/fragment/fragment.frag");
 
   auto baseMesh = Assets::MeshGenerator::Polygon<6>(Math::PI / 3.0f);
   base.setMesh(baseMesh);
@@ -56,6 +57,13 @@ void Arm::Start() {
   yAxis.setShader(shader);
   yAxis.getTransform().scale = Math::vec3f(0.03f, 5.0f, 0.0f);
   executionHandle->registerEntity(yAxis);
+
+  executionHandle->attachCamera(camera.addProperty<Property::CameraProperty>());
+  camera.getTransform().translation.z = -1;
+  float size = 7.0f;
+  camera.getProperty<Property::CameraProperty>("Camera")->setOrthographic(
+      -4 * size, 4 * size, 3 * size, -3 * size, -10.0f, 100.0f);
+  camera.setParent(&tip);
 
   speed = 1.0f;
 }

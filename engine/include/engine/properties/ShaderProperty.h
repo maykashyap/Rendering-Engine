@@ -1,8 +1,8 @@
 #pragma once
 
+#include "IProperty.h"
+#include "engine/assets/IShader.h"
 #include "engine/core/BackendBuilder.h"
-#include "engine/core/IProperty.h"
-#include "engine/renderer/IShader.h"
 #include <string_view>
 namespace Engine::Property {
 class ShaderProgram : public IProperty {

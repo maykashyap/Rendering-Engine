@@ -1,8 +1,8 @@
 #include "engine/properties/Transform.h"
 #include "engine/core/Entity.h"
-#include "engine/lib/math3d.h"
-#include "engine/lib/matrix.h"
-#include "engine/lib/vector.h"
+#include "engine/lib/math/math3d.h"
+#include "engine/lib/math/matrix.h"
+#include "engine/lib/math/vector.h"
 
 using namespace Engine::Property;
 using namespace Engine::Math;
